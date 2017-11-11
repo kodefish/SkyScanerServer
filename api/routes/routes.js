@@ -8,6 +8,7 @@ module.exports = function(app) {
 
     app.route('/flight');
 
+<<<<<<< Updated upstream
     app.route('/flight/getAllAirportsSuggestions/:departure/:duration/')
         .get(controller2.getAllAirportsLocation);
 
@@ -17,4 +18,8 @@ module.exports = function(app) {
     app.route('/session/create/:departureId/:destinationId/:dateDep')
         .get(controller2.createSession);
 
+=======
+    app.route('/session')
+    .get(controller.retrieveFlightsFromSession);
+>>>>>>> Stashed changes
 }
