@@ -77,7 +77,7 @@ exports.getAllAirportsLocation = function(req, res){
 exports.getAllRealFlights = function(req, res){
 
     //NEED TO CHANGE THE URL TO BE ABLE TO REQUEST
-    let urlSuggestions = "http://localhost:3000/flight/getAllAirportsSuggestions/" + req.params.departure + "/" + req.params.duration ;
+    let urlSuggestions = "https://skytravel-server.herokuapp.com/flight/getAllAirportsSuggestions/" + req.params.departure + "/" + req.params.duration ;
     let date = req.params.date ;
     let price = req.params.price ;
 
