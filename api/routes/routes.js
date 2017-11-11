@@ -2,9 +2,8 @@
 module.exports = function(app) {
     var controller = require('../controllers/controller');
 
-    // server routes
-    app.route('/')
-        .get(controller.hello);
+    app.route('/airports/search/:name')
+    .get(controller.searchAirportsName);
 
     app.route('/flight');
 }
