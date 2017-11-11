@@ -2,7 +2,6 @@
 
 var axios = require('axios');
 var apiKey = "ha506416221846351184864905536865";
-var request = require('request');
  
 
 exports.searchAirportsName = function(req, res){
