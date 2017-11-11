@@ -26,57 +26,54 @@ exports.testSession = function(req, res) {
     res.send(pollSession(req.query.key));
 }
 
+// origin_place, destination_place, outbound_date
 exports.retrieveFlightsFromSession = function(req, res) {
-    res.send(filterSessionResults(req.query.session, req.query.maxPrice, req.query.maxDuration));
+    var sessionKey = req.query.session;
+    var maxPrice = req.query.maxPrice;
+    var maxDuration = req.query.maxDuration;
+
+    var request = "http://partners.api.skyscanner.net/apiservices/pricing/uk1/v1.0/" + sessionKey + "?apikey=" + apiKey;
+    axios({
+        method: 'get',
+        url: request,
+        headers: {
+            'Accept': 'application/json'
+        }
+    }).then((response) => {
+        var pollResult = response.data;
+
+        // get cheapest outbound ids that fit the price restriction
+        var cheapestOutboundIds = getCheapestPrices(pollResult, maxPrice);
+        // filter out flights that are too long
+        // cheapestOutboundIds = filterDurationFlights(cheapestOutboundIds, maxDuration);
+
+        // create lookup table on all the legs
+        var lookup = new Map();
+        var legs = pollResult.Legs;
+        for (var i = 0; i < legs.length; i++) {
+            lookup.set(legs[i].Id, legs[i]);
+        }
+        // iterate through all the keys and create flight objects from the results
+        var flights = [];
+        cheapestOutboundIds.forEach((value, key, map) => {
+            var leg = lookup.get(key);
+            var priceOption = value;
+            var flight = {
+                departureTime: leg.Departure,
+                arrivalTime: leg.Arrival,
+                duration: leg.Duration,
+                carrier: leg.Carriers[0],
+                price: priceOption.Price,
+                ticketLink: priceOption.DeeplinkUrl
+            }
+            flights.push(flight);
+        });
+        res.send(flights);
+    });
+
 }
 
-/**
- * Returns a list of flights that correspond to the users preferences, 
- * so he can then choose the one he wants
- * @param {*} sessionKey 
- * @param {*} maxPrice 
- * @param {*} maxDuration 
- * @return flights, array of JSON flight objects
- */
-var filterSessionResults = function(sessionKey, maxPrice, maxDuration) {
-    var pollResult = pollSession(sessionKey);
-    console.log("main");
-    /*
-    console.log("got session body, computing cheapest prices");
-
-    // get cheapest outbound ids that fit the price restriction
-    var cheapestOutboundIds = getCheapestPrices(pollResult, maxPrice);
-    // filter out flights that are too long
-    // cheapestOutboundIds = filterDurationFlights(cheapestOutboundIds, maxDuration);
-
-    // create lookup table on all the legs
-    console.log("computing lookup table");
-    var lookup = new Map();
-    var legs = pollResult.Legs;
-    for (var i = 0; i < legs.length; i++) {
-        lookup.set(legs[i].Id, legs[i]);
-    }
-    // iterate through all the keys and create flight objects from the results
-    console.log("creating flight objects");
-    var flights = [];
-    for (var outId in cheapestOutboundIds) {
-        var leg = lookup.get(outId);
-        var priceOption = cheapestOutboundIds.get(outId);
-        var flight = {
-            departureTime: leg.Departure,
-            arrivalTime: leg.Arrival,
-            duration: leg.Duration,
-            carrier: leg.Carriers[0],
-            price: priceOption.Price,
-            ticketLink: priceOption.DeeplinkUrl
-        }
-        flights.push(flight);
-    }
-
-    console.log("returning " + flights.length + " results");
-    return JSON.stringify(flights);
-    */
-    return "ERROR";
+var pollSession = function(sessionKey, maxPrice, maxDuration, res) {
 }
 
 function getCheapestPrices(pollResult, maxPrice) {
@@ -106,33 +103,4 @@ function getCheapestPrices(pollResult, maxPrice) {
 // TODO if need be
 function filterDurationFlights(cheapestOutboudIds, maxDuration) {
     return cheapestOutboudIds;
-}
-
-var pollSession = function(sessionKey) {
-    var request = "http://partners.api.skyscanner.net/apiservices/pricing/uk1/v1.0/" + sessionKey + "?apikey=" + apiKey;
-    console.log("polling " + request);
-    axios({
-        method: 'get',
-        url: request,
-        headers: {
-            'Accept': 'application/json'
-        }
-    }).then((response) => {
-        console.log("poll");
-        /*
-        console.log(response.stringify)
-        // create list of json objects for each flight
-        var flights = response.data;
-        return flights;
-        */
-    });
-}
-
-function isEmpty(obj) {
-    for (var key in obj) {
-        if(obj.hasOwnProperty(key)) {
-            return false;
-        }
-    }
-    return true;
 }
