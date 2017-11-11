@@ -14,4 +14,7 @@ module.exports = function(app) {
     app.route('/flight/:departure/:date/:duration/:price')
         .get(controller2.getAllRealFlights);
 
+    app.route('/session/create/:departureId/:destinationId/:dateDep')
+        .get(controller2.createSession);
+
 }
