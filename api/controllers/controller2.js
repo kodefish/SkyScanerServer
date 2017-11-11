@@ -140,58 +140,20 @@ exports.createSession = function (req, res) {
     let originPlace = req.params.departureId;
     let destinationPlace = req.params.destinationId;
     let outbounddate = req.params.dateDep;
-
-    let dataToPost = {
-        cabinclass: "Economy",
-        country: "UK",
-        currency: "GBP",
-        locale: "en-GB",
-        locationSchema: "iata",
-        originplace: originPlace,
-        destinationplace: destinationPlace,
-        outbounddate: outbounddate,
-        inbounddate: outbounddate,
-        adults: "1",
-        children: "0",
-        infants: "0",
-        apikey: apiKey
-    }
-
     //console.log(dataToPost);
 
     let urlPost = "http://partners.api.skyscanner.net/apiservices/pricing/v1.0";
 
-    var jsonBody = {
-        cabinclass:"Economy",
-        country:"UK",
-        currency:"GBP",
-        locale:"en-GB",
-        locationSchema:"iata",
-        originplace:"EDI",
-        destinationplace:"GVA",
-        outbounddate:"2018-05-30",
-        inbounddate:"2018-06-02",
-        adults:"1",
-        children:"0",
-        infants:"0",
-        apikey:"ha348334469154725681039185711735"
-    };
-    request({
-        url: "http://partners.api.skyscanner.net/apiservices/pricing/v1.0",
-        method: "POST",
-        json: true,
-        body:jsonBody
-    }, function (error, response, body) {
-        console.log(body);
-        //console.log(response);
-    });
-   
-    // axios.post(urlPost, dataToPost,{
-    //     headers: {
-    // "Content-Type" : "application/x-www-form-urlencoded"
-    //     }
-    // }).then((response)=>{
-    //     console.log(response);
-    // })
+    var parametersToPass = "cabinclass=Economy&country=UK&currency=GBP&locale=en-GB&locationSchema=iata&originplace="+originPlace+"&destinationplace="+destinationPlace+"&outbounddate="+outbounddate+"&inbounddate="+outbounddate+"&adults=1&children=0&infants=0&apikey="+apiKey;
+    
+    axios.post(urlPost, parametersToPass,{
+        headers: {
+    "Content-Type" : "application/x-www-form-urlencoded"
+        }
+    }).then((response)=>{
+        let headersArray = response.headers.location.split('/');
+        //console.log(headersArray[headersArray.length-1]);
+        res.send(headersArray[headersArray.length-1]);
+    })
 
 }
