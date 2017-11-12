@@ -30,6 +30,7 @@ exports.testSession = function(req, res) {
 
 // origin_place, destination_place, outbound_date
 exports.retrieveFlightsFromSession = function(req, res) {
+    console.log("starting session search");
     let maxPrice = req.query.maxPrice;
     let maxDuration = req.query.maxDuration;
 
@@ -37,7 +38,9 @@ exports.retrieveFlightsFromSession = function(req, res) {
     let destinationPlace = req.query.destinationId;
     let outbounddate = req.query.dateDep;
 
+    console.log("creating session");
     createSession(originPlace, destinationPlace, outbounddate).then((session) => {
+        console.log("created session");
         var request = "http://partners.api.skyscanner.net/apiservices/pricing/uk1/v1.0/" + session + "?apikey=" + apiKey;
         axios({
             method: 'get',
@@ -46,10 +49,12 @@ exports.retrieveFlightsFromSession = function(req, res) {
                 'Accept': 'application/json'
             }
         }).then((response) => {
+            console.log("got response");
             var pollResult = response.data;
 
             // get cheapest outbound ids that fit the price restriction
             var cheapestOutboundIds = getCheapestPrices(pollResult, maxPrice);
+            console.log("computed cheapest flights");
             // filter out flights that are too long
             // cheapestOutboundIds = filterDurationFlights(cheapestOutboundIds, maxDuration);
 
@@ -59,6 +64,7 @@ exports.retrieveFlightsFromSession = function(req, res) {
             for (var i = 0; i < legs.length; i++) {
                 lookup.set(legs[i].Id, legs[i]);
             }
+            console.log("computed lookup");
             // iterate through all the keys and create flight objects from the results
             var flights = [];
             cheapestOutboundIds.forEach((value, key, map) => {
@@ -74,11 +80,11 @@ exports.retrieveFlightsFromSession = function(req, res) {
                 }
                 flights.push(flight);
             });
+            console.log("computed flights");
             res.send(flights);
         });
 
     });
-
     
 }
 
@@ -240,7 +246,7 @@ function sortDataSuggestion(url, currentSuggestion, price) {
 
 
 function createSession (originPlace, destinationPlace, outbounddate) {
-
+    console.log("init session");
     return new Promise((resolve, reject) => {
         let urlPost = "http://partners.api.skyscanner.net/apiservices/pricing/v1.0";
 
@@ -251,6 +257,7 @@ function createSession (originPlace, destinationPlace, outbounddate) {
         "Content-Type" : "application/x-www-form-urlencoded"
             }
         }).then((response)=>{
+            console.log("received session response");
             let headersArray = response.headers.location.split('/');
             //console.log(headersArray[headersArray.length-1]);
             resolve(headersArray[headersArray.length-1]);
