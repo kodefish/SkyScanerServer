@@ -104,6 +104,8 @@ function axio(session, maxPrice, maxDuration, res) {
 }
 
 function getCheapestPrices(pollResult, maxPrice) {
+    // disable price filter to always have results, just take the cheapest option
+    maxPrice = Number.MAX_SAFE_INTEGER;
     var outboundIds = new Map();
     if (pollResult !== undefined) {
         // loop through Itineraries and filter out by price
