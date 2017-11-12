@@ -98,7 +98,7 @@ function axio(session, maxPrice, maxDuration, res) {
         console.log(err);
         if (err.responseCode == 304) {
             console.log("304");
-            axio(session);
+            axio(session, maxPrice, maxDuration, res);
         }
     });
 }
