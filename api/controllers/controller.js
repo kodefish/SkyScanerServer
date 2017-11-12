@@ -30,7 +30,6 @@ exports.testSession = function(req, res) {
 
 // origin_place, destination_place, outbound_date
 exports.retrieveFlightsFromSession = function(req, res) {
-    console.log(req.headers);
     console.log("starting session search");
     let maxPrice = req.query.maxPrice;
     let maxDuration = req.query.maxDuration;
@@ -41,7 +40,7 @@ exports.retrieveFlightsFromSession = function(req, res) {
 
     console.log("creating session");
     createSession(originPlace, destinationPlace, outbounddate).then((session) => {
-        axio(session, maxPrice, maxDuration, res);
+        setTimeout(axio(session, maxPrice, maxDuration, res), 1000, 'funky');
     });
     
 }
@@ -95,10 +94,10 @@ function axio(session, maxPrice, maxDuration, res) {
         console.log("computed flights");
         res.send(flights);
     }).catch((err) => {
-        console.log(err);
-        if (err.responseCode == 304) {
+        //console.log(err);
+        if (err.response.status == 304) {
             console.log("304");
-            axio(session, maxPrice, maxDuration, res);
+            setTimeout(axio(session, maxPrice, maxDuration, res), 1000, 'funky');
         }
     });
 }
