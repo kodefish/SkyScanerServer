@@ -41,59 +41,66 @@ exports.retrieveFlightsFromSession = function(req, res) {
 
     console.log("creating session");
     createSession(originPlace, destinationPlace, outbounddate).then((session) => {
-        var request = "http://partners.api.skyscanner.net/apiservices/pricing/uk1/v1.0/" + session + "?apikey=" + apiKey;
-        console.log("created session, using request " + request);
-        axios({
-            method: 'get',
-            url: request,
-            headers: {
-                'Accept': 'application/json',
-                'Cache-Control': 'no-cache'
-            }
-        }).then((response) => {
-            console.log("got response");
-            var pollResult = response.data;
-
-            // get cheapest outbound ids that fit the price restriction
-            var cheapestOutboundIds = getCheapestPrices(pollResult, maxPrice);
-            console.log("computed cheapest flights");
-            // filter out flights that are too long
-            // cheapestOutboundIds = filterDurationFlights(cheapestOutboundIds, maxDuration);
-
-            // create lookup table on all the legs and carriers
-            var legLookup = new Map();
-            var legs = pollResult.Legs;
-            for (var i = 0; i < legs.length; i++) {
-                legLookup.set(legs[i].Id, legs[i]);
-            }
-
-            var carrierLookup = new Map();
-            var carriers = pollResult.Carriers;
-            for (var j = 0; j < carriers.length; ++j) {
-                carrierLookup.set(carriers[j].Id, carriers[j]);
-            }
-            console.log("computed lookup");
-            // iterate through all the keys and create flight objects from the results
-            var flights = [];
-            cheapestOutboundIds.forEach((value, key, map) => {
-                var leg = legLookup.get(key);
-                var priceOption = value;
-                var flight = {
-                    departureTime: leg.Departure,
-                    arrivalTime: leg.Arrival,
-                    duration: leg.Duration,
-                    carrier: carrierLookup.get(leg.Carriers[0]).Name,
-                    price: priceOption.Price,
-                    ticketLink: priceOption.DeeplinkUrl
-                }
-                flights.push(flight);
-            });
-            console.log("computed flights");
-            res.send(flights);
-        });
-
+        axio(session, maxPrice, maxDuration, res);
     });
     
+}
+
+function axio(session, maxPrice, maxDuration, res) {
+    axios({
+        method: 'get',
+        url: "http://partners.api.skyscanner.net/apiservices/pricing/uk1/v1.0/" + session + "?apikey=" + apiKey,
+        headers: {
+            'Accept': 'application/json',
+            'Cache-Control': 'no-cache'
+        }
+    }).then((response) => {
+        console.log("got response");
+        var pollResult = response.data;
+
+        // get cheapest outbound ids that fit the price restriction
+        var cheapestOutboundIds = getCheapestPrices(pollResult, maxPrice);
+        console.log("computed cheapest flights");
+        // filter out flights that are too long
+        // cheapestOutboundIds = filterDurationFlights(cheapestOutboundIds, maxDuration);
+
+        // create lookup table on all the legs and carriers
+        var legLookup = new Map();
+        var legs = pollResult.Legs;
+        for (var i = 0; i < legs.length; i++) {
+            legLookup.set(legs[i].Id, legs[i]);
+        }
+
+        var carrierLookup = new Map();
+        var carriers = pollResult.Carriers;
+        for (var j = 0; j < carriers.length; ++j) {
+            carrierLookup.set(carriers[j].Id, carriers[j]);
+        }
+        console.log("computed lookup");
+        // iterate through all the keys and create flight objects from the results
+        var flights = [];
+        cheapestOutboundIds.forEach((value, key, map) => {
+            var leg = legLookup.get(key);
+            var priceOption = value;
+            var flight = {
+                departureTime: leg.Departure,
+                arrivalTime: leg.Arrival,
+                duration: leg.Duration,
+                carrier: carrierLookup.get(leg.Carriers[0]).Name,
+                price: priceOption.Price,
+                ticketLink: priceOption.DeeplinkUrl
+            }
+            flights.push(flight);
+        });
+        console.log("computed flights");
+        res.send(flights);
+    }).catch((err) => {
+        console.log(err);
+        if (err.responseCode == 304) {
+            console.log("304");
+            axio(session);
+        }
+    });
 }
 
 function getCheapestPrices(pollResult, maxPrice) {
