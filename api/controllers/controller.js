@@ -132,7 +132,7 @@ exports.getAllAirportsLocation = function (req, res) {
                         let currentAirport = currentCity.Airports[l];
                         if (departure.toLowerCase() == currentAirport.Name.toLowerCase()) {
                             AirportDetails = currentAirport;
-                            //console.log(AirportDetails);
+                            console.log(AirportDetails);
                             break;
                         }
                     }
