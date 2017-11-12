@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">SkyTravel</string>
+
+    <string name="budgetTitle">Your budget</string>
+    <string name="lengthTitle">Duration of a flight</string>
+    <string name="priceTitle">Maximum price of a flight</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="enterDate">Enter travel date</string>
+    <string name="MakeReservation">Book</string>
+    <string name="goback">Go Back</string>
+</resources>

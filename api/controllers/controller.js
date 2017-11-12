@@ -164,6 +164,8 @@ exports.getAllAirportsLocation = function (req, res) {
 
         let suggestions = [];
 
+        var x = 1;
+        var s = 0;
         for (let i = 0; i < continents.length; i++) {
             let currentContinent = continents[i];
             for (let j = 0; j < currentContinent.Countries.length; j++) {
@@ -178,7 +180,9 @@ exports.getAllAirportsLocation = function (req, res) {
                             let takeOff_Airport_location = AirportDetails.Location.trim().split(',');
                             let km = distanceCalc.getDistanceFromLatLonInKm(takeOff_Airport_location[1], takeOff_Airport_location[0], currentLocation[1], currentLocation[0]);
                             let durationInMin = durationCalc.durationCalcTime(km);
-                            //console.log(duration);
+                            console.log(duration + " vs " + durationInMin);
+                            s += durationInMin;
+                            x++;
                             if (durationInMin <= duration) {
                                 suggestions.push(currentAirport);
                             }
@@ -187,6 +191,7 @@ exports.getAllAirportsLocation = function (req, res) {
                 }
             }
         }
+        console.log("average " + (s / x) + ", total kept" + suggestions.length);
 
         //console.log(suggestions);
 
