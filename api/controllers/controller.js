@@ -1,3 +1,5 @@
+import { setTimeout } from 'timers';
+
 'use strict';
 
 var axios = require('axios');
@@ -92,8 +94,13 @@ function axio(session, maxPrice, maxDuration, res) {
             }
             flights.push(flight);
         });
-        console.log("returning " + flights.length + " flights");
-        res.send(flights);
+        if (flights.length == 0) {
+            console.log("found 0 flights, polling again");
+            setTimeout(axio(session, maxPrice, maxDuration, res), 1000, 'funky');
+        } else {
+            console.log("returning " + flights.length + " flights");
+            res.send(flights);
+        }
     }).catch((err) => {
         //console.log(err);
         if (err.response.status == 304) {
@@ -198,7 +205,9 @@ exports.getAllAirportsLocation = function (req, res) {
 
         res.send(JSON.stringify(finalObject));
 
-    })
+    }).catch((err) => {
+        console.log(err.response.status);
+    });
 
 }
 
