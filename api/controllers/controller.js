@@ -40,8 +40,8 @@ exports.retrieveFlightsFromSession = function(req, res) {
 
     console.log("creating session");
     createSession(originPlace, destinationPlace, outbounddate).then((session) => {
-        console.log("created session");
         var request = "http://partners.api.skyscanner.net/apiservices/pricing/uk1/v1.0/" + session + "?apikey=" + apiKey;
+        console.log("created session, using request " + request);
         axios({
             method: 'get',
             url: request,
