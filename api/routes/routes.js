@@ -1,7 +1,6 @@
 'use strict';
 module.exports = function(app) {
     var controller = require('../controllers/controller');
-    var controller2 = require('../controllers/controller2');
 
     app.route('/airports/search/:name')
     .get(controller.searchAirportsName);
@@ -9,13 +8,10 @@ module.exports = function(app) {
     app.route('/flight');
 
     app.route('/flight/getAllAirportsSuggestions/:departure/:duration/')
-        .get(controller2.getAllAirportsLocation);
+        .get(controller.getAllAirportsLocation);
 
     app.route('/flight/:departure/:date/:duration/:price')
-        .get(controller2.getAllRealFlights);
-
-    app.route('/session/create/:departureId/:destinationId/:dateDep')
-        .get(controller2.createSession);
+        .get(controller.getAllRealFlights);
 
     app.route('/session')
     .get(controller.retrieveFlightsFromSession);

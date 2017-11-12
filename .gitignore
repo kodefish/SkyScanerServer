@@ -1,7 +1,7 @@
 
 # Created by https://www.gitignore.io/api/vim,node,webstorm,visualstudiocode
 
-### Node ###
+## Node ###
 # Logs
 logs
 *.log
@@ -78,6 +78,7 @@ tags
 
 ### VisualStudioCode ###
 .vscode/*
+.vscode
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
