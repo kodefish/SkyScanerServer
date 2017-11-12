@@ -30,7 +30,7 @@ exports.testSession = function(req, res) {
 
 // origin_place, destination_place, outbound_date
 exports.retrieveFlightsFromSession = function(req, res) {
-    console.log(req);
+    console.log(req.query);
     console.log("starting session search");
     let maxPrice = req.query.maxPrice;
     let maxDuration = req.query.maxDuration;
