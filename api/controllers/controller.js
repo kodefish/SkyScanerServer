@@ -90,7 +90,6 @@ function axio(session, maxPrice, maxDuration, res) {
                 price: priceOption.Price,
                 ticketLink: priceOption.DeeplinkUrl
             }
-            console.log(flight);
             flights.push(flight);
         });
         console.log("returning " + flights.length + " flights");
