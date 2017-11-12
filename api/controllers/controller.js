@@ -44,10 +44,7 @@ exports.retrieveFlightsFromSession = function(req, res) {
         console.log("created session, using request " + request);
         axios({
             method: 'get',
-            url: request,
-            headers: {
-                'Accept': 'application/json'
-            }
+            url: request
         }).then((response) => {
             console.log("got response");
             var pollResult = response.data;
