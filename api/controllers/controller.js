@@ -30,7 +30,7 @@ exports.testSession = function(req, res) {
 
 // origin_place, destination_place, outbound_date
 exports.retrieveFlightsFromSession = function(req, res) {
-    console.log(req.query);
+    console.log(req.headers);
     console.log("starting session search");
     let maxPrice = req.query.maxPrice;
     let maxDuration = req.query.maxDuration;
@@ -45,7 +45,11 @@ exports.retrieveFlightsFromSession = function(req, res) {
         console.log("created session, using request " + request);
         axios({
             method: 'get',
-            url: request
+            url: request,
+            headers: {
+                'Accept': 'application/json',
+                'Cache-Control': 'no-cache'
+            }
         }).then((response) => {
             console.log("got response");
             var pollResult = response.data;
