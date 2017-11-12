@@ -92,13 +92,7 @@ function axio(session, maxPrice, maxDuration, res) {
             }
             flights.push(flight);
         });
-        if (flights.length == 0) {
-            console.log("found 0 flights, polling again");
-            setTimeout(axio(session, maxPrice, maxDuration, res), 1000, 'funky');
-        } else {
-            console.log("returning " + flights.length + " flights");
-            res.send(flights);
-        }
+           res.send(flights);
     }).catch((err) => {
         //console.log(err);
         if (err.response.status == 304) {
