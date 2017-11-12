@@ -78,6 +78,7 @@ function axio(session, maxPrice, maxDuration, res) {
         console.log("computed lookup");
         // iterate through all the keys and create flight objects from the results
         var flights = [];
+        console.log(cheapestOutboundIds.size);
         cheapestOutboundIds.forEach((value, key, map) => {
             var leg = legLookup.get(key);
             var priceOption = value;
